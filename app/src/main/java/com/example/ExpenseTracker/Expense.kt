@@ -8,14 +8,16 @@ data class Expense
             val id: Int,
             val description: String,
             val amount: Double,
-            val date: String
+            val date: String,
+            val expenseType: ExpenseCategory
             ): Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString() ?: "",
         parcel.readDouble(),
-        parcel.readString() ?: ""
+        parcel.readString() ?: "",
+        parcel.readTypedObject(ExpenseCategory.CREATOR)!!
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -23,6 +25,7 @@ data class Expense
         parcel.writeString(description)
         parcel.writeDouble(amount)
         parcel.writeString(date)
+        parcel.writeTypedObject(expenseType, flags)
     }
 
     override fun describeContents(): Int {
@@ -41,9 +44,9 @@ data class Expense
 }
 class ExpenseFactory
 {
-        fun createExpense(id: Int, description: String, amount: Double, date: String): Expense
+        fun createExpense(id: Int, description: String, amount: Double, date: String, expenseType: ExpenseCategory): Expense
     {
-        return Expense(id, description, amount, date)
+        return Expense(id, description, amount, date, expenseType)
     }
 
 }
@@ -68,10 +71,24 @@ class ExpenseManager
         private val expenseFactory: ExpenseFactory = ExpenseFactory()
         private val expenseList: ExpenseList = ExpenseList()
         private var expenseCounter: Int =0;
-        fun registerNewExpense(description: String, date: String, amount: Double): Int
+    fun string2ExpenseType(string: String): ExpenseCategory
+    {
+        when(string)
+        {
+            "Food" -> return ExpenseCategory.Food
+            "Entertainment" -> return ExpenseCategory.Entertainment
+            "Health" -> return ExpenseCategory.Health
+            "Transport" -> return ExpenseCategory.Transport
+            "Education" -> return ExpenseCategory.Education
+            "Housing" -> return ExpenseCategory.Housing
+            "Utilities" -> return ExpenseCategory.Utilities
+            else -> return ExpenseCategory.Others
+        }
+    }
+        fun registerNewExpense(description: String, date: String, amount: Double, expenseType: String): Int
         {
                 var newExpenseId=expenseCounter++
-                var newExpense = expenseFactory.createExpense(newExpenseId,description,amount,date)
+                var newExpense = expenseFactory.createExpense(newExpenseId,description,amount,date, string2ExpenseType(expenseType))
                 expenseList.addExpense(newExpense)
                 return newExpenseId
         }
