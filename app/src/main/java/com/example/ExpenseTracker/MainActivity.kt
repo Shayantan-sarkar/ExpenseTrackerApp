@@ -36,9 +36,9 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
     }
 
-    public fun registerExpense(desc: String, date: String, amount: Double)
+    public fun registerExpense(desc: String, date: String, amount: Double, expenseCategory: String)
     {
-        var newExpenseId = expenseManager.registerNewExpense(desc, date, amount)
+        var newExpenseId = expenseManager.registerNewExpense(desc, date, amount, expenseCategory)
         var newExpense = expenseManager.getExpense(newExpenseId)
         if(newExpense==null)
         {

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -40,6 +41,7 @@ class HomeFragment : Fragment() {
         var descEditText: EditText = binding.editTextDescription
         var dateEditText: EditText = binding.editTextDate
         var amountEditText: EditText = binding.editTextAmount
+        var expenseTypeTextView: Spinner = binding.editTextExpenseCategory
         if(mainActivity==null||amountEditText.text.isEmpty())
         {
             return
@@ -47,7 +49,8 @@ class HomeFragment : Fragment() {
         val desc=descEditText.text.toString()
         val date=dateEditText.text.toString()
         val amount=amountEditText.text.toString().toDouble()
-        mainActivity!!.registerExpense(desc,date,amount)
+        val expenseType=expenseTypeTextView.selectedItem.toString()
+        mainActivity!!.registerExpense(desc,date,amount, expenseType)
     }
 
     override fun onDestroyView() {
