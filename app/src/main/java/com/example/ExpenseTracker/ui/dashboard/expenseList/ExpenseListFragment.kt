@@ -6,13 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.example.ExpenseTracker.Expense
-import com.example.ExpenseTracker.ExpenseAdapter
+import com.example.ExpenseTracker.Expense.Expense
+import com.example.ExpenseTracker.Expense.ExpenseAdapter
 import com.example.ExpenseTracker.MainActivity
-import com.example.ExpenseTracker.databinding.FragmentDashboardBinding
 import com.example.ExpenseTracker.databinding.FragmentExpenselistBinding
-import com.example.ExpenseTracker.ui.dashboard.DashboardViewModel
 
 class ExpenseListFragment : Fragment() {
     private var _binding: FragmentExpenselistBinding? = null

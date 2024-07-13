@@ -5,15 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProvider
-import com.example.ExpenseTracker.ExpenseAdapter
 import com.example.ExpenseTracker.MainActivity
-import com.example.ExpenseTracker.R
-import com.example.ExpenseTracker.databinding.FragmentDashboardBinding
 import com.example.ExpenseTracker.databinding.FragmentExpenseanalysisBinding
-import com.example.ExpenseTracker.ui.dashboard.DashboardViewModel
-import com.example.ExpenseTracker.ui.dashboard.expenseList.ExpenseListFragment
 
 class ExpenseAnalysisFragment: Fragment() {
     private var _binding: FragmentExpenseanalysisBinding? = null
