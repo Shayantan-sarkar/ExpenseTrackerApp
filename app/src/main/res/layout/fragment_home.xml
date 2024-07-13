@@ -12,6 +12,12 @@
         android:orientation="vertical"
         tools:context=".MainActivity">
 
+        <Spinner
+            android:id="@+id/editRecordType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/RecordType" />
+
         <EditText
             android:id="@+id/editTextDate"
             android:layout_width="match_parent"

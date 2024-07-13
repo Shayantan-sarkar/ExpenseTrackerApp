@@ -4,13 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ListView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
-import com.example.ExpenseTracker.Expense
-import com.example.ExpenseTracker.ExpenseAdapter
+import com.example.ExpenseTracker.Expense.ExpenseAdapter
 import com.example.ExpenseTracker.MainActivity
 import com.example.ExpenseTracker.R
 import com.example.ExpenseTracker.databinding.FragmentDashboardBinding

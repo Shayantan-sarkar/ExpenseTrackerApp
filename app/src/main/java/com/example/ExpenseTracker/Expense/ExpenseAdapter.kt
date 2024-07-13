@@ -1,13 +1,11 @@
-package com.example.ExpenseTracker
+package com.example.ExpenseTracker.Expense
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.BaseAdapter
 import android.widget.TextView
-
+import com.example.ExpenseTracker.R
 
 
 class ExpenseAdapter(private val context: Context, private val expenses: List<Expense>) : BaseAdapter() {
