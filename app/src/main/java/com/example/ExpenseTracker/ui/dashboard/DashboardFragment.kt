@@ -7,11 +7,15 @@ import android.view.ViewGroup
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import com.example.ExpenseTracker.Expense
 import com.example.ExpenseTracker.ExpenseAdapter
 import com.example.ExpenseTracker.MainActivity
+import com.example.ExpenseTracker.R
 import com.example.ExpenseTracker.databinding.FragmentDashboardBinding
+import com.example.ExpenseTracker.ui.dashboard.expenseAnalysis.ExpenseAnalysisFragment
+import com.example.ExpenseTracker.ui.dashboard.expenseList.ExpenseListFragment
 
 class DashboardFragment : Fragment() {
 
@@ -19,6 +23,11 @@ class DashboardFragment : Fragment() {
     private val binding get() = _binding!!
     var adapter: ExpenseAdapter? = null
     var mainActivity: MainActivity? = null
+
+    private lateinit var expenseListFragment: ExpenseListFragment
+    private lateinit var analysisFragment: ExpenseAnalysisFragment
+
+    private var currentFragment: Fragment? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -30,16 +39,37 @@ class DashboardFragment : Fragment() {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
         mainActivity = activity as MainActivity?
-        val expenseItems: List<Expense> = mainActivity!!.expenseManager.getExpenses()
-        if(expenseItems!=null)
-            adapter = ExpenseAdapter(requireContext(), expenseItems)
-        val listView: ListView = binding.expenseListView
-        if (listView != null&&adapter!=null) {
-            listView.setAdapter(adapter)
+        expenseListFragment = ExpenseListFragment()
+        analysisFragment = ExpenseAnalysisFragment()
+        val iconShowAnalysis = binding.buttonShowAnalysis
+        val iconShowExpenses = binding.buttonShowExpenses
+        replaceFragment(expenseListFragment)
+        iconShowExpenses.isSelected = true
+        iconShowExpenses.setOnClickListener {
+            iconShowExpenses.isSelected = true
+            iconShowAnalysis.isSelected = false
+            replaceFragment(expenseListFragment)
+        }
+        iconShowAnalysis.setOnClickListener {
+            iconShowExpenses.isSelected = false
+            iconShowAnalysis.isSelected = true
+            replaceFragment(analysisFragment)
         }
         return root
     }
 
+    fun replaceFragment(fragment: Fragment)
+    {
+        currentFragment?.let {
+            if (it == fragment)
+                return
+        }
+
+        currentFragment = fragment
+        val transaction: FragmentTransaction = childFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragment_container, fragment)
+        transaction.commit()
+    }
     override fun onResume() {
         super.onResume()
     }
