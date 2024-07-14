@@ -1,6 +1,7 @@
 package com.example.ExpenseTracker.ui.dashboard
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,12 +31,16 @@ class DashboardFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.e("Sarkar","Dashboard1")
         val dashboardViewModel =
             ViewModelProvider(this).get(DashboardViewModel::class.java)
-
+        Log.e("Sarkar","Dashboard2")
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
+        Log.e("Sarkar","Dashboard3")
         val root: View = binding.root
+        Log.e("Sarkar","Dashboard4")
         mainActivity = activity as MainActivity?
+        Log.e("Sarkar","Dashboard5")
         expenseListFragment = ExpenseListFragment()
         analysisFragment = ExpenseAnalysisFragment()
         val iconShowAnalysis = binding.buttonShowAnalysis
@@ -52,6 +57,7 @@ class DashboardFragment : Fragment() {
             iconShowAnalysis.isSelected = true
             replaceFragment(analysisFragment)
         }
+        Log.e("Sarkar","Dashboard6")
         return root
     }
 

@@ -77,13 +77,14 @@ class ExpenseDAO(val context: Context?) {
     }
     val allExpenses: List<Expense>
         get() {
+            Log.e("Shayantan", "Getting all expenses1")
             val expenses: MutableList<Expense> = ArrayList()
-
+            Log.e("Shayantan", "Getting all expenses2")
             val cursor = database!!.query(
                 DatabaseHelper.TABLE_EXPENSES,
                 allColumns, null, null, null, null, null
             )
-
+            Log.e("Shayantan", "Getting all expenses3")
             cursor.moveToFirst()
             while (!cursor.isAfterLast) {
                 val expense = cursorToExpense(cursor)

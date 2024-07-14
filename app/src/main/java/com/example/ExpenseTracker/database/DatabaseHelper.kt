@@ -14,11 +14,8 @@ class DatabaseHelper(context: Context?) :
     ) {
 
     override fun onCreate(db: SQLiteDatabase) {
-        Log.e("Shayantan", "onCreate1")
         db.execSQL(TABLE_CREATE_EXPENSES)
-        Log.e("Shayantan", "onCreate2")
         db.execSQL(TABLE_CREATE_INCOME)
-        Log.d("DatabaseHelper", "onCreate3")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {

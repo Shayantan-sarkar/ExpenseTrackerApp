@@ -3,7 +3,8 @@ package com.example.ExpenseTracker.Income
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
-import com.example.ExpenseTracker.database.IncomeDAO
+import androidx.lifecycle.LiveData
+import com.example.ExpenseTracker.database.Repository
 
 data class Income
     (
@@ -38,27 +39,27 @@ data class Income
         }
     }
 }
-class IncomeManager(val incomeDAO: IncomeDAO)
+class IncomeManager(val repository: Repository)
 {
     fun registerNewIncome(description: String, date: String, amount: Double): Int
     {
         Log.e("Shayantan", "Income2")
         var newIncome = Income(description,amount,date)
-        return incomeDAO.addIncome(newIncome)
+        return repository.insertIncome(newIncome)
     }
 
     //todo: retrieve from database directly
     fun getIncome(incomeID: Int): Income?
     {
-        return incomeDAO.getIncome(incomeID)
+        return repository.getIncome(incomeID)
     }
     fun deleteIncome(incomeID: Int): Boolean
     {
-        return incomeDAO.delIncome(incomeID)
+        return repository.deleteIncome(incomeID)
     }
-    fun getExpenses(): List<Income>
+    fun getIncomes(): List<Income>?
     {
-        return incomeDAO.allIncomes
+        return repository.getAllIncomes().value
     }
 
 
