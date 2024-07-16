@@ -24,9 +24,9 @@ class ExpenseListFragment : Fragment() {
         _binding = FragmentExpenselistBinding.inflate(inflater, container, false)
         val root: View = binding.root
         mainActivity = activity as MainActivity?
-        val expenseItems: List<Expense> = mainActivity!!.expenseManager.getExpenses()
+        val expenseItems: List<Expense>? = mainActivity!!.expenseManager!!.getExpenses()
         if(expenseItems!=null)
-            adapter = ExpenseAdapter(requireContext(), expenseItems)
+            adapter = ExpenseAdapter(requireContext(), expenseItems!!)
         val listView: ListView = binding.expenseListView
         if (listView != null&&adapter!=null) {
             listView.setAdapter(adapter)

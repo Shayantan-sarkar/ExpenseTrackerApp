@@ -2,7 +2,8 @@ package com.example.ExpenseTracker.Expense
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.example.ExpenseTracker.database.ExpenseDAO
+import androidx.lifecycle.LiveData
+import com.example.ExpenseTracker.database.Repository
 
 data class Expense
     (
@@ -51,26 +52,27 @@ class ExpenseFactory
 
 }
 
-class ExpenseManager(val expenseDAO: ExpenseDAO)
+class ExpenseManager(val repository: Repository)
 {
         private val expenseFactory: ExpenseFactory = ExpenseFactory()
         fun registerNewExpense(description: String, date: String, amount: Double, expenseType: String): Int
         {
                 var newExpense = Expense(description,amount,date, ExpenseCategory.string2ExpenseType(expenseType))
-                return expenseDAO.addExpense(newExpense)
+                return repository.insertExpense(newExpense)
         }
         //todo: retrieve from database directly
         fun getExpense(expenseID: Int): Expense?
         {
-            return expenseDAO.getExpense(expenseID)
+            return repository.getExpense(expenseID)
         }
     fun deleteExpense(expenseID: Int): Boolean
     {
-        return expenseDAO.delExpense(expenseID)
+        return repository.deleteExpense(expenseID)
     }
-    fun getExpenses(): List<Expense>
+    //Todo: Currently converted the live<list> to list data.
+    fun getExpenses(): List<Expense>?
     {
-        return expenseDAO.allExpenses
+        return repository.getAllExpenses().value
     }
 
 
