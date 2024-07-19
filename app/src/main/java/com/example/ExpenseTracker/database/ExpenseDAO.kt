@@ -96,7 +96,53 @@ class ExpenseDAO(val context: Context?) {
         }
 
     private fun cursorToExpense(cursor: Cursor): Expense {
+        Log.e("DataRetrieval","Temp1")
         val expense: Expense = Expense((cursor.getString(4)), cursor.getDouble(1), cursor.getString(3), ExpenseCategory.string2ExpenseType(cursor.getString(2)))
         return expense
     }
+
+    fun getCategoryWiseExpenses(): Map<String, Double> {
+        Log.e("DataRetrieval", "sarkar0")
+        val categoryWiseExpenses: MutableMap<String, Double> = HashMap()
+        Log.e("DataRetrieval", "sarkar1")
+        val cursor = database!!.query(
+            DatabaseHelper.TABLE_EXPENSES,
+            arrayOf(DatabaseHelper.COLUMN_CATEGORY, "SUM(${DatabaseHelper.COLUMN_AMOUNT}) as total"),
+            null, null,
+            "${DatabaseHelper.COLUMN_CATEGORY}", null, null
+            )
+        Log.e("DataRetrieval", "sarkar2")
+        if (cursor.moveToFirst()) {
+            do {
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CATEGORY))
+                val total = cursor.getDouble(cursor.getColumnIndexOrThrow("total"))
+                categoryWiseExpenses[category] = total
+            } while (cursor.moveToNext())
+        }
+        Log.e("DataRetrieval", "sarkar3")
+        cursor.close()
+        Log.e("DataRetrieval", "sarkar4")
+        return categoryWiseExpenses
+    }
+
+    fun getExpensesInRange(startDate: String, endDate: String): List<Expense> {
+        val expenses: MutableList<Expense> = ArrayList()
+        val cursor = database!!.query(
+            DatabaseHelper.TABLE_EXPENSES,
+            allColumns,
+            "${DatabaseHelper.COLUMN_DATE} BETWEEN ? AND ?",
+            arrayOf(startDate, endDate),
+            null, null, null
+        )
+        Log.e("DataRetrieval", "Temp0")
+        cursor.moveToFirst()
+        while (!cursor.isAfterLast) {
+            val expense = cursorToExpense(cursor)
+            expenses.add(expense)
+            cursor.moveToNext()
+            }
+        cursor.close()
+        return expenses
+    }
+
 }

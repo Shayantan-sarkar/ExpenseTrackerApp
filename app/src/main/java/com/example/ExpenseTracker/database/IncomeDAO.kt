@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
+import com.example.ExpenseTracker.Expense.Expense
 import com.example.ExpenseTracker.Income.Income
 
 class IncomeDAO(val context: Context?) {
@@ -103,5 +104,25 @@ class IncomeDAO(val context: Context?) {
         Log.e("Shayantan", "Income12")
         val income: Income = Income(cursor.getString(3), cursor.getDouble(1), cursor.getString(2))
         return income
+    }
+    fun getIncomesInRange(startDate: String, endDate: String): List<Income> {
+        val incomes: MutableList<Income> = ArrayList()
+        val cursor = database!!.query(
+            DatabaseHelper.TABLE_INCOME,
+            allColumns,
+            "${DatabaseHelper.COLUMN_DATE} BETWEEN ? AND ?",
+            arrayOf(startDate, endDate),
+            null,
+            null,
+            null
+        )
+        cursor.moveToFirst()
+        while (!cursor.isAfterLast) {
+            val expense = cursorToIncome(cursor)
+            incomes.add(expense)
+            cursor.moveToNext()
+        }
+        cursor.close()
+        return incomes
     }
 }
