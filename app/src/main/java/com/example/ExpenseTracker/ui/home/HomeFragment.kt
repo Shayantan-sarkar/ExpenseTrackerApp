@@ -74,7 +74,8 @@ class HomeFragment : Fragment() {
         val datePickerDialog = DatePickerDialog(
             this.requireContext(),
             { _, selectedYear, selectedMonth, selectedDay ->
-                val formattedDate = "${selectedDay}/${selectedMonth + 1}/${selectedYear}"
+                //val formattedDate = "${selectedYear}/${selectedMonth + 1}/${selectedDay}"
+                val formattedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay)
                 dateTextView!!.text = formattedDate
             },
             year, month, day
