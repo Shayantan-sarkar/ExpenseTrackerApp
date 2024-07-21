@@ -23,8 +23,10 @@ class MainActivity : AppCompatActivity() {
     var repository: Repository? = null
     var expenseManager: ExpenseManager? = null
     var incomeManager: IncomeManager? = null
+    lateinit var predictor: ExpensePredictor
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.e("Shayantan", "onCreate1")
+        predictor = ExpensePredictor(this)
         super.onCreate(savedInstanceState)
         Log.e("Shayantan", "onCreate2")
         repository = Repository(expenseDAO, incomeDAO)
@@ -46,9 +48,14 @@ class MainActivity : AppCompatActivity() {
             )
         )
         Log.e("Shayantan", "onCreate6")
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         Log.e("Shayantan", "onCreate7")
+        val category = predictor.predict("Yoga class Fee")
+
+        // Display or use the category
+        Log.d("MachineLearningModel", "Predicted category: $category")
     }
 
     public fun registerExpense(desc: String, date: String, amount: Double, expenseCategory: String)
