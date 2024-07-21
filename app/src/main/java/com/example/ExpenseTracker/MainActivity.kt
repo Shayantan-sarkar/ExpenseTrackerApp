@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     var repository: Repository? = null
     var expenseManager: ExpenseManager? = null
     var incomeManager: IncomeManager? = null
-    private lateinit var predictor: ExpensePredictor
+    lateinit var predictor: ExpensePredictor
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.e("Shayantan", "onCreate1")
         predictor = ExpensePredictor(this)

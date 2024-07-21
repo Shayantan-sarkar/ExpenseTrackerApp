@@ -26,8 +26,10 @@ class HomeFragment : Fragment() {
     var expenseTypeTextView: Spinner? = null
     private var _binding: FragmentHomeBinding? = null
     var mainActivity:MainActivity? = null
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
     private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,26 +64,52 @@ class HomeFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
-
+        setDate(year, month, day)
+        descEditText!!.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                descriptionAdded(descEditText!!.text.toString())
+            }
+        }
 
     }
-    fun onSelectDateButtonClicked(view: View) {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
+    private fun descriptionAdded(desc: String)
+    {
+        if(expenseTypeTextView==null||desc.isEmpty())
+            return
+        var predicted = mainActivity!!.predictor.predict(desc)
+        expenseTypeTextView!!.setSelection(categoryStringToInt(predicted))
+        Log.e("shayantan", "Machine Learning Model Description: $desc, Predicted: $predicted")
+    }
+    private fun categoryStringToInt(category: String): Int {
+        when (category) {
+            "Others" -> return 0
+            "Transportation" -> return 1
+            "Entertainment" -> return 2
+            "Utilities" -> return 3
+            "Housing" -> return 4
+            "Education" -> return 5
+            "Health" -> return 6
+            "Food" -> return 7
+            else -> {Log.e("shayantan", "Unimplemented category $category")
+                return 0}
+        }
+    }
 
+    fun onSelectDateButtonClicked(view: View) {
         val datePickerDialog = DatePickerDialog(
             this.requireContext(),
             { _, selectedYear, selectedMonth, selectedDay ->
-                //val formattedDate = "${selectedYear}/${selectedMonth + 1}/${selectedDay}"
-                val formattedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay)
-                dateTextView!!.text = formattedDate
+                setDate(selectedYear, selectedMonth, selectedDay)
             },
             year, month, day
         )
 
         datePickerDialog.show()
+    }
+    private fun setDate(year: Int, month: Int, day: Int)
+    {
+        val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, day)
+        dateTextView!!.text = formattedDate
     }
     fun onAddButtonClicked(view: View) {
         if(mainActivity==null||amountEditText!!.text.isEmpty())

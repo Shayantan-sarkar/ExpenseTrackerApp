@@ -1,13 +1,13 @@
 <resources>
     <string-array name="expense_categories">
-        <item>Food</item>
+        <item>Others</item>
         <item>Transportation</item>
         <item>Entertainment</item>
         <item>Utilities</item>
         <item>Housing</item>
         <item>Education</item>
         <item>Health</item>
-        <item>Other</item>
+        <item>Food</item>
     </string-array>
     <string-array name="RecordType">
         <item>Expense</item>
