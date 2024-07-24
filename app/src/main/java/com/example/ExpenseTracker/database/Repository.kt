@@ -97,6 +97,13 @@ class Repository(private val expenseDAO: ExpenseDAO, private val incomeDAO: Inco
         return liveData
     }
 
+    fun getCategoryWiseExpensesInRange(startDate: String, endDate: String): LiveData<Map<String, Double>> {
+        val liveData = MutableLiveData<Map<String, Double>>()
+        val categoryWiseExpenses = expenseDAO.getCategoryWiseExpensesInRange(startDate, endDate)
+        liveData.postValue(categoryWiseExpenses)
+        return liveData
+    }
+
     fun getIncome(incomeID: Int): Income? {
         var income: Income? = null
             income = incomeDAO.getIncome(incomeID)
