@@ -55,4 +55,6 @@ dependencies {
     implementation("org.tensorflow:tensorflow-lite:2.16.1")
     implementation("org.tensorflow:tensorflow-lite-support:0.4.0")
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
+    implementation("androidx.security:security-crypto:1.1.0-alpha03")
 }
