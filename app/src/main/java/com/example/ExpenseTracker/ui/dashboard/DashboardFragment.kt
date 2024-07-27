@@ -14,6 +14,7 @@ import com.example.ExpenseTracker.R
 import com.example.ExpenseTracker.databinding.FragmentDashboardBinding
 import com.example.ExpenseTracker.ui.dashboard.expenseAnalysis.ExpenseAnalysisFragment
 import com.example.ExpenseTracker.ui.dashboard.expenseList.ExpenseListFragment
+import com.example.ExpenseTracker.ui.dashboard.expenseList.IncomeListFragment
 
 class DashboardFragment : Fragment() {
 
@@ -24,7 +25,7 @@ class DashboardFragment : Fragment() {
 
     private lateinit var expenseListFragment: ExpenseListFragment
     private lateinit var analysisFragment: ExpenseAnalysisFragment
-
+    private lateinit var incomeListFragment: IncomeListFragment
     private var currentFragment: Fragment? = null
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,19 +44,29 @@ class DashboardFragment : Fragment() {
         Log.e("Sarkar","Dashboard5")
         expenseListFragment = ExpenseListFragment()
         analysisFragment = ExpenseAnalysisFragment()
+        incomeListFragment = IncomeListFragment()
         val iconShowAnalysis = binding.buttonShowAnalysis
         val iconShowExpenses = binding.buttonShowExpenses
+        val iconShowIncomes = binding.buttonShowIncomes
         replaceFragment(expenseListFragment)
         iconShowExpenses.isSelected = true
         iconShowExpenses.setOnClickListener {
             iconShowExpenses.isSelected = true
             iconShowAnalysis.isSelected = false
+            iconShowIncomes.isSelected = false
             replaceFragment(expenseListFragment)
         }
         iconShowAnalysis.setOnClickListener {
             iconShowExpenses.isSelected = false
             iconShowAnalysis.isSelected = true
+            iconShowIncomes.isSelected = false
             replaceFragment(analysisFragment)
+        }
+        iconShowIncomes.setOnClickListener {
+            iconShowExpenses.isSelected = false
+            iconShowAnalysis.isSelected = false
+            iconShowIncomes.isSelected = true
+            replaceFragment(incomeListFragment)
         }
         Log.e("Sarkar","Dashboard6")
         return root

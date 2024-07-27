@@ -24,21 +24,21 @@ class ExpenseAdapter(private val context: Context, private val expenses: List<Ex
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View
-        val viewHolder: ViewHolder
+        val viewHolder: ExpenseViewHolder
 
         if (convertView == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.item_card, parent, false)
-            viewHolder = ViewHolder(
-                view.findViewById(R.id.textNo),
-                view.findViewById(R.id.textAmount),
-                view.findViewById(R.id.textDescription),
-                view.findViewById(R.id.textDate),
-                view.findViewById(R.id.textExpenseCategory)
+            view = LayoutInflater.from(context).inflate(R.layout.expenseitem_card, parent, false)
+            viewHolder = ExpenseViewHolder(
+                view.findViewById(R.id.expenseTextNo),
+                view.findViewById(R.id.expenseTextAmount),
+                view.findViewById(R.id.expenseTextDescription),
+                view.findViewById(R.id.expenseTextDate),
+                view.findViewById(R.id.expenseTextExpenseCategory)
             )
             view.tag = viewHolder
         } else {
             view = convertView
-            viewHolder = view.tag as ViewHolder
+            viewHolder = view.tag as ExpenseViewHolder
         }
         val expense = getItem(position) as Expense
         viewHolder.textNo.text = (position + 1).toString()
@@ -49,7 +49,7 @@ class ExpenseAdapter(private val context: Context, private val expenses: List<Ex
         return view
     }
 
-    private data class ViewHolder(
+    private data class ExpenseViewHolder(
         val textNo: TextView,
         val textAmount: TextView,
         val textDescription: TextView,
