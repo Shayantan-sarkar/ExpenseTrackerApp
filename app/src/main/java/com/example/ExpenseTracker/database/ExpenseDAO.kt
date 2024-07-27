@@ -145,4 +145,29 @@ class ExpenseDAO(val context: Context?) {
         return expenses
     }
 
+
+    fun getCategoryWiseExpensesInRange(startDate: String, endDate: String): Map<String, Double> {
+        val categoryWiseExpenses: MutableMap<String, Double> = HashMap()
+
+        val cursor = database!!.query(
+            DatabaseHelper.TABLE_EXPENSES,
+            arrayOf(DatabaseHelper.COLUMN_CATEGORY, "SUM(${DatabaseHelper.COLUMN_AMOUNT}) as total"),
+            "${DatabaseHelper.COLUMN_DATE} BETWEEN ? AND ?",
+            arrayOf(startDate, endDate),
+            "${DatabaseHelper.COLUMN_CATEGORY}",
+            null,
+            null
+        )
+
+        if (cursor.moveToFirst()) {
+            do {
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CATEGORY))
+                val total = cursor.getDouble(cursor.getColumnIndexOrThrow("total"))
+                categoryWiseExpenses[category] = total
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return categoryWiseExpenses
+    }
 }

@@ -6,7 +6,9 @@ import com.example.ExpenseTracker.database.Repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import com.example.ExpenseTracker.Expense.Expense
+import com.example.ExpenseTracker.Income.Income
 import com.example.ExpenseTracker.MainActivity
+import java.util.Date
 
 class ExpenseViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -18,28 +20,15 @@ class ExpenseViewModelFactory(private val repository: Repository) : ViewModelPro
     }
 }
 class ExpenseViewModel(private val repository: Repository): ViewModel() {
-
-val allExpenses: LiveData<List<Expense>> by lazy {
-        repository.getAllExpenses()
-    }
-    val currentMonthExpenses: LiveData<List<Expense>> by lazy {
-        val (startDate, endDate) = repository.getCurrentMonthRange()
-        repository.getExpensesInRange(startDate, endDate)
+    fun getCategoryWiseExpensesForDateRange(startDate: String, endDate: String): LiveData<Map<String, Double>> {
+        return repository.getCategoryWiseExpensesInRange(startDate, endDate)
     }
 
-    val lastMonthExpenses: LiveData<List<Expense>> by lazy {
-        val (startDate, endDate) = repository.getLastMonthRange()
-        repository.getExpensesInRange(startDate, endDate)
+    fun getExpensesForDateRange(startDate: String, endDate: String): LiveData<List<Expense>> {
+        return repository.getExpensesInRange(startDate, endDate)
     }
 
-    val thisYearExpenses: LiveData<List<Expense>> by lazy {
-        Log.e("DataRetrieval","ExpenseViewModel: thisYearExpenses")
-        val (startDate, endDate) = repository.getCurrentYearRange()
-        repository.getExpensesInRange(startDate, endDate)
+    fun getIncomesForDateRange(startDate: String, endDate: String): LiveData<List<Income>> {
+        return repository.getIncomesInRange(startDate, endDate)
     }
-
-    val categoryWiseExpenses: LiveData<Map<String, Double>> by lazy {
-        repository.getCategoryWiseExpenses()
-    }
-
 }

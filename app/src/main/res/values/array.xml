@@ -13,4 +13,10 @@
         <item>Expense</item>
         <item>Income</item>
     </string-array>
+    <string-array name="AnalysisRange">
+        <item>This Month</item>
+        <item>Last month</item>
+        <item>This Year</item>
+        <item>Custom</item>
+    </string-array>
 </resources>
