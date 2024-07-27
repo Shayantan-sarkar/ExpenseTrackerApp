@@ -11,6 +11,8 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.ExpenseTracker.Date
+import com.example.ExpenseTracker.ExpenseCalendar
 import com.example.ExpenseTracker.MainActivity
 import com.example.ExpenseTracker.database.Repository
 import com.example.ExpenseTracker.databinding.FragmentExpenseanalysisBinding
@@ -25,11 +27,14 @@ class ExpenseAnalysisFragment: Fragment() {
     var mainActivity: MainActivity? = null
     var repository: Repository? = null
     var expenseViewModel: ExpenseViewModel? = null
-    private lateinit var startDataButton: Button
+    private lateinit var startDateButton: Button
     private lateinit var endDataButton: Button
-    private lateinit var startDataTextView: TextView
+    private lateinit var startDateTextView: TextView
     private lateinit var endDataTextView: TextView
     private lateinit var spinner: Spinner
+    private var calendar = ExpenseCalendar.getInstance()
+    private var startDate: Date = calendar.getCurrentDate()
+    private var endDate: Date = calendar.getCurrentDate()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,7 +44,6 @@ class ExpenseAnalysisFragment: Fragment() {
         repository = mainActivity?.repository
         val viewModelFactory = ExpenseViewModelFactory(repository!!)
         expenseViewModel = ViewModelProvider(this, viewModelFactory).get(ExpenseViewModel::class.java)
-        getCurrentYearExpensesAnalysis()
         _binding = FragmentExpenseanalysisBinding.inflate(inflater, container, false)
         val root: View = binding.root
         return root
@@ -47,9 +51,9 @@ class ExpenseAnalysisFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        startDataButton = binding.startDateButton
+        startDateButton = binding.startDateButton
         endDataButton = binding.endDateButton
-        startDataTextView = binding.startDateTextView
+        startDateTextView = binding.startDateTextView
         endDataTextView = binding.endDateTextView
         spinner = binding.editRangeType
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
@@ -62,29 +66,51 @@ class ExpenseAnalysisFragment: Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
+        startDateButton.setOnClickListener(this::setStartDate)
+        endDataButton.setOnClickListener(this::setEndDate)
+    }
+
+    private fun setStartDate(view: View)
+    {
+        calendar.chooseDate(this.requireContext(), startDate,startDateTextView!!)
+    }
+
+    private fun setEndDate(view: View)
+    {
+        calendar.chooseDate(this.requireContext(), endDate, endDataTextView!!)
     }
 
     fun getCurrentMonthExpensesAnalysis()
     {
-        val (startDate, endDate) = getCurrentMonthRange()
+        val (startDate, endDate) = calendar.getCurrentMonthRangeInStringPair()
         updateCategoryWiseExpensesForDateRange(startDate, endDate)
         updateIncomesForDateRange(startDate, endDate)
     }
 
     fun getCurrentYearExpensesAnalysis()
     {
-        val (startDate, endDate) = getCurrentYearRange()
+        val (startDate, endDate) = calendar.getCurrentYearRangeInStringPair()
         updateCategoryWiseExpensesForDateRange(startDate, endDate)
         updateIncomesForDateRange(startDate, endDate)
     }
 
     fun getLastMonthExpensesAnalysis()
     {
-        val (startDate, endDate) = getLastMonthRange()
+        val (startDate, endDate) = calendar.getLastMonthRangeInStringPair()
         updateCategoryWiseExpensesForDateRange(startDate, endDate)
         updateIncomesForDateRange(startDate, endDate)
     }
 
+    fun getCustomRangeAnalysis()
+    {
+        if(startDate==null || endDate== null)
+            return
+        val startDateString = calendar.ConvertDateToString(startDate)
+        val endDateString = calendar.ConvertDateToString(endDate)
+        Log.d("Hellow", startDateString + " " + endDateString)
+        updateCategoryWiseExpensesForDateRange(startDateString, endDateString)
+        updateIncomesForDateRange(startDateString, endDateString)
+    }
     private fun updateCategoryWiseExpensesForDateRange(startDate: String, endDate: String) {
         expenseViewModel!!.getCategoryWiseExpensesForDateRange(startDate, endDate).observe(viewLifecycleOwner) { expenses ->
             for ((expenseCat, expenseAmount) in expenses) {
@@ -122,31 +148,7 @@ class ExpenseAnalysisFragment: Fragment() {
         _binding = null
     }
 
-    private fun getCurrentMonthRange(): Pair<String, String> {
-        val calendar = Calendar.getInstance()
-        val start = calendar.apply { set(Calendar.DAY_OF_MONTH, 1) }.time
-        val end = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return Pair(dateFormat.format(start), dateFormat.format(end))
-    }
 
-    private fun getLastMonthRange(): Pair<String, String> {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.MONTH, -1)
-        val start = calendar.apply { set(Calendar.DAY_OF_MONTH, 1) }.time
-        val end = calendar.apply { set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) }.time
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return Pair(dateFormat.format(start), dateFormat.format(end))
-    }
-
-    private fun getCurrentYearRange(): Pair<String, String> {
-        Log.e("Shayantan", "getCurrentYearRange:1 ")
-        val calendar = Calendar.getInstance()
-        val start = calendar.apply { set(Calendar.DAY_OF_YEAR, 1) }.time
-        val end = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return Pair(dateFormat.format(start), dateFormat.format(end))
-    }
 
     private fun handleRangeType(position: Int) {
         if (position < 3) {

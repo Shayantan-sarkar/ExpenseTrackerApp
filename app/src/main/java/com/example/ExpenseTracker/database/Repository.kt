@@ -5,11 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.ExpenseTracker.Expense.Expense
 import com.example.ExpenseTracker.Income.Income
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 class Repository(private val expenseDAO: ExpenseDAO, private val incomeDAO: IncomeDAO) {
 
@@ -126,30 +121,4 @@ class Repository(private val expenseDAO: ExpenseDAO, private val incomeDAO: Inco
         incomesInRange.postValue(incomeDAO.getIncomesInRange(startDate, endDate))
         return incomesInRange
     }
-    fun getCurrentMonthRange(): Pair<String, String> {
-        val calendar = Calendar.getInstance()
-        val start = calendar.apply { set(Calendar.DAY_OF_MONTH, 1) }.time
-        val end = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return Pair(dateFormat.format(start), dateFormat.format(end))
-    }
-
-    fun getLastMonthRange(): Pair<String, String> {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.MONTH, -1)
-        val start = calendar.apply { set(Calendar.DAY_OF_MONTH, 1) }.time
-        val end = calendar.apply { set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) }.time
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return Pair(dateFormat.format(start), dateFormat.format(end))
-    }
-
-    fun getCurrentYearRange(): Pair<String, String> {
-        Log.e("Shayantan", "getCurrentYearRange:1 ")
-        val calendar = Calendar.getInstance()
-        val start = calendar.apply { set(Calendar.DAY_OF_YEAR, 1) }.time
-        val end = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return Pair(dateFormat.format(start), dateFormat.format(end))
-    }
-
 }

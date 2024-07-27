@@ -12,6 +12,8 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.ExpenseTracker.Date
+import com.example.ExpenseTracker.ExpenseCalendar
 import com.example.ExpenseTracker.MainActivity
 import com.example.ExpenseTracker.R
 import com.example.ExpenseTracker.databinding.FragmentHomeBinding
@@ -26,10 +28,8 @@ class HomeFragment : Fragment() {
     var expenseTypeTextView: Spinner? = null
     private var _binding: FragmentHomeBinding? = null
     var mainActivity:MainActivity? = null
-    val calendar = Calendar.getInstance()
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH)
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
+    val calendar = ExpenseCalendar.getInstance()
+    val date: Date = calendar.getCurrentDate()
     private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,7 +64,6 @@ class HomeFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
-        setDate(year, month, day)
         descEditText!!.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 descriptionAdded(descEditText!!.text.toString())
@@ -96,20 +95,7 @@ class HomeFragment : Fragment() {
     }
 
     fun onSelectDateButtonClicked(view: View) {
-        val datePickerDialog = DatePickerDialog(
-            this.requireContext(),
-            { _, selectedYear, selectedMonth, selectedDay ->
-                setDate(selectedYear, selectedMonth, selectedDay)
-            },
-            year, month, day
-        )
-
-        datePickerDialog.show()
-    }
-    private fun setDate(year: Int, month: Int, day: Int)
-    {
-        val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, day)
-        dateTextView!!.text = formattedDate
+        calendar.chooseDate(this.requireContext(), date, dateTextView!!)
     }
     fun onAddButtonClicked(view: View) {
         if(mainActivity==null||amountEditText!!.text.isEmpty())
