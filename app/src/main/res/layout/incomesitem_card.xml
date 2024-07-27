@@ -1,5 +1,5 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/expenseCardView"
+    android:id="@+id/incomeCardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
@@ -12,31 +12,25 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textNo"
+                android:id="@+id/incomeTextNo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TextView" />
 
             <TextView
-                android:id="@+id/textAmount"
+                android:id="@+id/incomeTextAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TextView" />
 
             <TextView
-                android:id="@+id/textDescription"
+                android:id="@+id/incomeTextDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TextView" />
 
             <TextView
-                android:id="@+id/textDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-
-            <TextView
-                android:id="@+id/textExpenseCategory"
+                android:id="@+id/incomeTextDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TextView" />
