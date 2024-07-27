@@ -1,5 +1,6 @@
 package com.example.ExpenseTracker.ui.dashboard.expenseAnalysis
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,6 +20,10 @@ import com.example.ExpenseTracker.MainActivity
 import com.example.ExpenseTracker.database.Repository
 import com.example.ExpenseTracker.databinding.FragmentExpenseanalysisBinding
 import com.example.ExpenseTracker.ui.dashboard.DashboardViewModel
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -33,6 +38,9 @@ class ExpenseAnalysisFragment: Fragment() {
     private lateinit var endDataButton: Button
     private lateinit var startDateTextView: TextView
     private lateinit var endDataTextView: TextView
+    private lateinit var totalExpenseTextView: TextView
+    private lateinit var totalIncomeTextView: TextView
+    private lateinit var totalSavingsTextView: TextView
     private lateinit var spinner: Spinner
     private var calendar = ExpenseCalendar.getInstance()
     private var startDate: Date = calendar.getCurrentDate()
@@ -42,9 +50,11 @@ class ExpenseAnalysisFragment: Fragment() {
     private var overAllExpenseSum = 0.0
     private var overAllIncomeSum = 0.0
     private var overAllSavingsSum = 0.0
+    private lateinit var categoryWiseExpense: Map<String, Double>
     private lateinit var categoryWiseDateRangeLiveData: DateRangeLiveData<Map<String, Double>>
     private lateinit var expensesDateRangeLiveData: DateRangeLiveData<List<Expense>>
     private lateinit var incomesDateRangeLiveData: DateRangeLiveData<List<Income>>
+    private lateinit var pieChart: PieChart
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,6 +75,9 @@ class ExpenseAnalysisFragment: Fragment() {
         endDataButton = binding.endDateButton
         startDateTextView = binding.startDateTextView
         endDataTextView = binding.endDateTextView
+        totalExpenseTextView = binding.totalexpenseAmount
+        totalIncomeTextView = binding.totalincomeAmount
+        totalSavingsTextView = binding.totalsavingsAmount
         spinner = binding.editRangeType
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
@@ -86,7 +99,10 @@ class ExpenseAnalysisFragment: Fragment() {
         categoryWiseDateRangeLiveData.observeDateRange(startDateString, endDateString, viewLifecycleOwner) { expenses ->
             for ((expenseCat, expenseAmount) in expenses) {
                 Log.d("DataRetrievals", "$expenseCat $expenseAmount")
+
             }
+            categoryWiseExpense = expenses
+            calculateAnalysis()
         }
 
         expensesDateRangeLiveData.observeDateRange(startDateString, endDateString, viewLifecycleOwner) { expenses ->
@@ -94,6 +110,8 @@ class ExpenseAnalysisFragment: Fragment() {
             for (expense in expenses) {
                 overAllExpenseSum += expense.amount
             }
+            totalExpenseTextView.text = overAllExpenseSum.toString()
+            calculateAnalysis()
             Log.d("DataRetrievals", overAllExpenseSum.toString())
         }
 
@@ -102,12 +120,54 @@ class ExpenseAnalysisFragment: Fragment() {
             for (income in incomes) {
                 overAllIncomeSum += income.amount
             }
+            totalIncomeTextView.text = overAllIncomeSum.toString()
+            calculateAnalysis()
             Log.d("DataRetrievals", overAllIncomeSum.toString())
         }
         startDateButton.setOnClickListener(this::setStartDate)
         endDataButton.setOnClickListener(this::setEndDate)
+        pieChart = binding.expensePieChart
     }
 
+    private fun calculateAnalysis()
+    {
+        totalSavingsTextView.text = (overAllIncomeSum - overAllExpenseSum).toString()
+        updatePieChart()
+    }
+    private fun updatePieChart() {
+        val entries = if (categoryWiseExpense == null) {
+            listOf(
+                PieEntry(0f, "Others"),
+                PieEntry(0f, "Transport"),
+                PieEntry(0f, "Entertainment"),
+                PieEntry(0f, "Utilities"),
+                PieEntry(0f, "Housing"),
+                PieEntry(0f, "Education"),
+                PieEntry(0f, "Health"),
+                PieEntry(0f, "Food")
+            )
+
+         } else {
+            val pieEntries: List<PieEntry> = categoryWiseExpense.map { (category, amount) ->
+                PieEntry(amount.toFloat(), category)
+            }
+            pieEntries.toMutableList()
+         }
+        val filteredEntries = entries.filter { it.value != 0f }
+        val dataSet = PieDataSet(filteredEntries, "Expense Categories")
+        dataSet.colors = listOf(
+        Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW,
+        Color.MAGENTA, Color.CYAN, Color.LTGRAY, Color.DKGRAY
+        )
+        val data = PieData(dataSet)
+        pieChart.data = data
+        pieChart.description.isEnabled = true // Disable the description text
+        pieChart.centerText = "Expenses" // Center text
+        pieChart.setEntryLabelTextSize(12f) // Entry label text size
+        pieChart.setEntryLabelColor(Color.BLACK) // Entry label color
+        pieChart.animateY(1000) // Animation for the chart
+        pieChart.invalidate() // Refresh the chart
+    }
     private fun setStartDate(view: View)
     {
         calendar.chooseDate(this.requireContext(), startDate,startDateTextView!!)
