@@ -12,7 +12,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.ExpenseTracker.Date
+import com.example.ExpenseTracker.Expense.Expense
 import com.example.ExpenseTracker.ExpenseCalendar
+import com.example.ExpenseTracker.Income.Income
 import com.example.ExpenseTracker.MainActivity
 import com.example.ExpenseTracker.database.Repository
 import com.example.ExpenseTracker.databinding.FragmentExpenseanalysisBinding
@@ -35,6 +37,14 @@ class ExpenseAnalysisFragment: Fragment() {
     private var calendar = ExpenseCalendar.getInstance()
     private var startDate: Date = calendar.getCurrentDate()
     private var endDate: Date = calendar.getCurrentDate()
+    private var prevStartDateObserve: String? = null
+    private var prevEndDateObserve: String? = null
+    private var overAllExpenseSum = 0.0
+    private var overAllIncomeSum = 0.0
+    private var overAllSavingsSum = 0.0
+    private lateinit var categoryWiseDateRangeLiveData: DateRangeLiveData<Map<String, Double>>
+    private lateinit var expensesDateRangeLiveData: DateRangeLiveData<List<Expense>>
+    private lateinit var incomesDateRangeLiveData: DateRangeLiveData<List<Income>>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -66,6 +76,34 @@ class ExpenseAnalysisFragment: Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
+        val startDateString = calendar.ConvertDateToString(startDate)
+        val endDateString = calendar.ConvertDateToString(endDate)
+        startDateTextView.text = startDateString
+        endDataTextView.text = endDateString
+        categoryWiseDateRangeLiveData = DateRangeLiveData(expenseViewModel!!, expenseViewModel!!.getCategoryWiseExpensesForDateRange(startDateString, endDateString))
+        incomesDateRangeLiveData = DateRangeLiveData(expenseViewModel!!, expenseViewModel!!.getIncomesForDateRange(startDateString, endDateString))
+        expensesDateRangeLiveData = DateRangeLiveData(expenseViewModel!!, expenseViewModel!!.getExpensesForDateRange(startDateString, endDateString))
+        categoryWiseDateRangeLiveData.observeDateRange(startDateString, endDateString, viewLifecycleOwner) { expenses ->
+            for ((expenseCat, expenseAmount) in expenses) {
+                Log.d("DataRetrievals", "$expenseCat $expenseAmount")
+            }
+        }
+
+        expensesDateRangeLiveData.observeDateRange(startDateString, endDateString, viewLifecycleOwner) { expenses ->
+            overAllExpenseSum = 0.0
+            for (expense in expenses) {
+                overAllExpenseSum += expense.amount
+            }
+            Log.d("DataRetrievals", overAllExpenseSum.toString())
+        }
+
+        incomesDateRangeLiveData.observeDateRange(startDateString, endDateString, viewLifecycleOwner) { incomes ->
+            overAllIncomeSum = 0.0
+            for (income in incomes) {
+                overAllIncomeSum += income.amount
+            }
+            Log.d("DataRetrievals", overAllIncomeSum.toString())
+        }
         startDateButton.setOnClickListener(this::setStartDate)
         endDataButton.setOnClickListener(this::setEndDate)
     }
@@ -73,32 +111,37 @@ class ExpenseAnalysisFragment: Fragment() {
     private fun setStartDate(view: View)
     {
         calendar.chooseDate(this.requireContext(), startDate,startDateTextView!!)
+        {
+            handleRangeType(spinner.selectedItemPosition)
+        }
+
     }
 
     private fun setEndDate(view: View)
     {
-        calendar.chooseDate(this.requireContext(), endDate, endDataTextView!!)
+        calendar.chooseDate(this.requireContext(), endDate, endDataTextView!!){
+        handleRangeType(spinner.selectedItemPosition)}
     }
 
     fun getCurrentMonthExpensesAnalysis()
     {
         val (startDate, endDate) = calendar.getCurrentMonthRangeInStringPair()
-        updateCategoryWiseExpensesForDateRange(startDate, endDate)
-        updateIncomesForDateRange(startDate, endDate)
+        updateRange(startDate, endDate)
+        Log.e("DataRetrieval", "Current Month Expenses Analysis")
     }
 
     fun getCurrentYearExpensesAnalysis()
     {
         val (startDate, endDate) = calendar.getCurrentYearRangeInStringPair()
-        updateCategoryWiseExpensesForDateRange(startDate, endDate)
-        updateIncomesForDateRange(startDate, endDate)
+        updateRange(startDate, endDate)
+        Log.e("DataRetrieval", "Current Year Expenses Analysis")
     }
 
     fun getLastMonthExpensesAnalysis()
     {
         val (startDate, endDate) = calendar.getLastMonthRangeInStringPair()
-        updateCategoryWiseExpensesForDateRange(startDate, endDate)
-        updateIncomesForDateRange(startDate, endDate)
+        updateRange(startDate, endDate)
+        Log.e("DataRetrieval", "Last Month Expenses Analysis")
     }
 
     fun getCustomRangeAnalysis()
@@ -107,37 +150,39 @@ class ExpenseAnalysisFragment: Fragment() {
             return
         val startDateString = calendar.ConvertDateToString(startDate)
         val endDateString = calendar.ConvertDateToString(endDate)
-        Log.d("Hellow", startDateString + " " + endDateString)
-        updateCategoryWiseExpensesForDateRange(startDateString, endDateString)
-        updateIncomesForDateRange(startDateString, endDateString)
+        updateRange(startDateString, endDateString)
+        Log.e("DataRetrieval", "Custom Range Expenses Analysis")
     }
-    private fun updateCategoryWiseExpensesForDateRange(startDate: String, endDate: String) {
-        expenseViewModel!!.getCategoryWiseExpensesForDateRange(startDate, endDate).observe(viewLifecycleOwner) { expenses ->
-            for ((expenseCat, expenseAmount) in expenses) {
-                Log.d("DataRetrievals", "$expenseCat $expenseAmount")
-            }
-        }
+    private fun updateRange(startDate: String, endDate: String) {
+        categoryWiseDateRangeLiveData.updateSource(expenseViewModel!!.getCategoryWiseExpensesForDateRange(startDate, endDate))
+        expensesDateRangeLiveData.updateSource(expenseViewModel!!.getExpensesForDateRange(startDate, endDate))
+        incomesDateRangeLiveData.updateSource(expenseViewModel!!.getIncomesForDateRange(startDate, endDate))
     }
 
-    private fun updateExpensesForDateRange(startDate: String, endDate: String) {
-    var overAllSum: Double = 0.0
-    expenseViewModel!!.getExpensesForDateRange(startDate, endDate).observe(viewLifecycleOwner) { expenses ->
-        for(expense in expenses)    {
-            overAllSum+= expense.amount
-        }
-        Log.d("DataRetrieval", overAllSum.toString())
-        }
+    private fun calculateSavingsForDateRange(startDate: String, endDate: String): Double
+    {
+        return overAllIncomeSum - overAllExpenseSum
     }
 
-    private fun updateIncomesForDateRange(startDate: String, endDate: String) {
-        var overAllSum: Double = 0.0
-        expenseViewModel!!.getIncomesForDateRange(startDate, endDate).observe(viewLifecycleOwner) { incomes ->
-            for(income in incomes)    {
-                overAllSum+= income.amount
-            }
-            Log.d("DataRetrievals", overAllSum.toString())
-        }
-    }
+//    private fun updateExpensesForDateRange(startDate: String, endDate: String) {
+//    var overAllSum: Double = 0.0
+//    expenseViewModel!!.getExpensesForDateRange(startDate, endDate).observe(viewLifecycleOwner) { expenses ->
+//        for(expense in expenses)    {
+//            overAllSum+= expense.amount
+//        }
+//        Log.d("DataRetrieval", overAllSum.toString())
+//        }
+//    }
+//
+//    private fun updateIncomesForDateRange(startDate: String, endDate: String) {
+//        var overAllSum: Double = 0.0
+//        expenseViewModel!!.getIncomesForDateRange(startDate, endDate).observe(viewLifecycleOwner) { incomes ->
+//            for(income in incomes)    {
+//                overAllSum+= income.amount
+//            }
+//            Log.d("DataRetrievals", overAllSum.toString())
+//        }
+//    }
 
     override fun onResume() {
         super.onResume()
@@ -156,15 +201,20 @@ class ExpenseAnalysisFragment: Fragment() {
             binding.endDateButton.visibility = View.GONE
             binding.startDateTextView.visibility = View.GONE
             binding.endDateTextView.visibility = View.GONE
-        } else if (position == 3){
+        } else if (position == 3) {
             binding.startDateButton.visibility = View.VISIBLE
             binding.endDateButton.visibility = View.VISIBLE
             binding.startDateTextView.visibility = View.VISIBLE
             binding.endDateTextView.visibility = View.VISIBLE
+        } else {
+            Log.e("Shayantan", "Unimplemented")
+            return
         }
-        else
-        {
-            Log.e("Shayantan","Unimplemented")
+        when (position) {
+            0 -> getCurrentMonthExpensesAnalysis()
+            1 -> getLastMonthExpensesAnalysis()
+            2 -> getCurrentYearExpensesAnalysis()
+            3 -> getCustomRangeAnalysis()
         }
     }
 
