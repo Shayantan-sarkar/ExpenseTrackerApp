@@ -69,6 +69,8 @@ class HomeFragment : Fragment() {
                 descriptionAdded(descEditText!!.text.toString())
             }
         }
+        var dateAsString = calendar.ConvertDateToString(date)
+        dateTextView!!.text=dateAsString
 
     }
     private fun descriptionAdded(desc: String)
