@@ -95,7 +95,7 @@ class HomeFragment : Fragment() {
     }
 
     fun onSelectDateButtonClicked(view: View) {
-        calendar.chooseDate(this.requireContext(), date, dateTextView!!)
+        calendar.chooseDate(this.requireContext(), date, dateTextView!!){}
     }
     fun onAddButtonClicked(view: View) {
         if(mainActivity==null||amountEditText!!.text.isEmpty())

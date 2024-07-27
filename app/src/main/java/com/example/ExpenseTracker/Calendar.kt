@@ -42,12 +42,13 @@ class ExpenseCalendar {
         return date
     }
 
-    fun chooseDate(context: Context, currentSetDate: Date, dateTextView: TextView)
+    fun chooseDate(context: Context, currentSetDate: Date, dateTextView: TextView, onDateSet: ()->Unit)
     {
         val datePickerDialog = DatePickerDialog(
             context,
             { _, selectedYear, selectedMonth, selectedDay ->
                 setDate(selectedYear, selectedMonth, selectedDay, dateTextView, currentSetDate)
+                onDateSet()
             },
             currentSetDate.year, currentSetDate.month, currentSetDate.day
         )
